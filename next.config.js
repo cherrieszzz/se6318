@@ -4,6 +4,9 @@ const nextConfig = {
     appDir: true,
     serverComponentsExternalPackages: ["mongoose"],
   },
+  images: {
+    domains: ['i.postimg.cc'],
+  },
 }
 
 module.exports = nextConfig

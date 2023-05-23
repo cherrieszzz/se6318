@@ -1,27 +1,24 @@
 import Image from "next/image";
 import nextImage from "../public/next.svg";
 import Link from "next/link";
+import { useContext } from "react";
+import { AuthContext } from "@/contexts/AuthProvider";
 
 const Nav = () => {
+  const {logout} = useContext(AuthContext);
+  const loggedUser = JSON.parse( sessionStorage.getItem('User') );
   return (
-    <div className="navbar bg-base-100">
+    <div className="navbar bg-base-100 px-5">
       <div className="flex-1">
         <Link clLinkssName="btn btn-ghost normal-case text-xl" href={"/"}>
           TODO
         </Link>
       </div>
       <div className="flex-none gap-2">
-        <div className="form-control">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered"
-          />
-        </div>
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full">
-              <Image src={nextImage} alt="avatar" width={25} height={25} />
+              <Image src='https://i.postimg.cc/NM8mj29R/QQ-20230522092653.jpg' alt="avatar" width={25} height={25} />
             </div>
           </label>
           <ul
@@ -30,12 +27,12 @@ const Nav = () => {
           >
             <li>
               <Link className="justify-between" href={"/profile"}>
-                Profile
+                {loggedUser ? loggedUser.username : <Link href="/login">登录</Link>}
                 <span className="badge">New</span>
               </Link>
             </li>
             <li>
-              <a>Logout</a>
+              <a onClick={logout}>Logout</a>
             </li>
           </ul>
         </div>

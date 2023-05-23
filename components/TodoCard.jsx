@@ -27,7 +27,7 @@ const Detail = ({ id, name, deadline, directions }) => {
   );
 };
 
-const TodoCard = ({ id, name, deadline, directions }) => {
+const TodoCard = ({ id, name, deadline, directions, handleClick }) => {
   return (
     <div>
       <div className="alert shadow-lg">
@@ -35,8 +35,8 @@ const TodoCard = ({ id, name, deadline, directions }) => {
           <div className="flex items-center">
             <input
               type="checkbox"
-              checked
               className="checkbox checkbox-primary mx-2"
+              onClick={handleClick}
             />
             <span>{name}</span>
           </div>

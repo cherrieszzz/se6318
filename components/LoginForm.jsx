@@ -1,15 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const {signin} = useContext(AuthContext);
+  const loggedUser = JSON.parse( sessionStorage.getItem('User') );
 
-  const handleSubmit = () => {
-    
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signin(username, password);
+  }
+
+  if(loggedUser) {
+    router.push('/todos');
   }
 
   return (
-    <div className="rounded-lg border-2 p-3 flex justify-center">
+    <div className="rounded-lg p-3 flex justify-center shadow-lg">
       <form action="" onSubmit={handleSubmit}>
         <h1 className="text-3xl font-black">登录</h1>
         <div className="w-full">
