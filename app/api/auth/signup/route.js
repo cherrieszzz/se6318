@@ -6,18 +6,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const POST = async (req) => {
-  const { username, password, email, image } = req.json();
-  console.log(req.json());
+  const data = await req.json();
   try {
+    console.log(data.email);
     await connectToDB();
+    const repeatUser = await User.findOne({ email:data.email }).exec();
+    if (repeatUser) {
+      return new Response(JSON.stringify({ message: "此邮箱已被注册" }), {
+        status: 501,
+      });
+    }
     const newUser = new User({
-      username: username,
-      password: password,
-      image: image,
-      email: email,
+      username: data.username,
+      password: data.password,
+      image: data.image,
+      email: data.email,
     });
     const savedUser = await newUser.save();
-    const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_KEY, {
       expiresIn: "24h",
     });
     const resData = {
