@@ -29,7 +29,7 @@ const Detail = ({ id, name, deadline, directions }) => {
 
 const TodoCard = ({ id, name, deadline, directions, handleClick }) => {
   return (
-    <div>
+    <div className="my-5">
       <div className="alert shadow-lg">
         <div className="flex justify-between w-full">
           <div className="flex items-center">

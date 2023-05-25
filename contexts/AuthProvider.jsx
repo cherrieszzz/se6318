@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react";
 import { createContext } from "react";
 export const AuthContext = createContext();
 import { useRouter } from "next/navigation";
+
 const AuthProvider = ({ children }) => {
+
   const router = useRouter();
-  const [loggedUser, setLoggedUser] = useState(sessionStorage.getItem('User'));
+  const [loggedUser, setLoggedUser] = useState(null);
 
   const signup = async (username, email, password, image) => {
     const formData = {
@@ -25,6 +27,7 @@ const AuthProvider = ({ children }) => {
           image: res.data.image,
         };
         sessionStorage.setItem('User',JSON.stringify(sessionUser));
+        setLoggedUser(JSON.parse( sessionStorage.getItem('User') ));
         router.push('/todos');
       }
       if (res.status === 500 && 501) {
@@ -53,6 +56,7 @@ const AuthProvider = ({ children }) => {
           image: res.data.image,
         };
         sessionStorage.setItem('User',JSON.stringify(sessionUser));
+        setLoggedUser(JSON.parse( sessionStorage.getItem('User') ));
       }
     } catch {
       return "server err";
@@ -61,7 +65,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     sessionStorage.clear();
-    setLoggedUser();
+    setLoggedUser(null);
     router.push('/');
   };
 

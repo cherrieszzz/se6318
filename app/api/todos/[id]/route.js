@@ -16,7 +16,7 @@ export const DELETE =  async (req, {params}) => {
         const token = authorizationHeader.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_KEY);
         const userId = decoded.userId;
-        await Todo.findOneAndDelete({id:params.id, user:userId});
+        await Todo.findOneAndDelete({_id:params.id, user:userId});
         return new Response("删除成功",{status:200});
     } catch (err) {
         console.log(err)
