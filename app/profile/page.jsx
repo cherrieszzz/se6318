@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react'
 import { AuthContext } from '@/contexts/AuthProvider';
 
 const Page = () => {
-  const loggedUser = JSON.parse( sessionStorage.getItem('User') );
+  const {loggedUser} = useContext(AuthContext);
   
   return (
     <div className='container max-w-md mx-auto'>

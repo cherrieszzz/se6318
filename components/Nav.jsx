@@ -5,8 +5,8 @@ import { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthProvider";
 
 const Nav = () => {
-  const {logout} = useContext(AuthContext);
-  const loggedUser = JSON.parse( sessionStorage.getItem('User') );
+  const {loggedUser,logout} = useContext(AuthContext);
+ 
   return (
     <div className="navbar bg-base-100 px-5">
       <div className="flex-1">
@@ -26,13 +26,12 @@ const Nav = () => {
             className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link className="justify-between" href={"/profile"}>
-                {loggedUser ? loggedUser.username : <Link href="/login">登录</Link>}
-                <span className="badge">New</span>
-              </Link>
+              <p className="justify-between">
+                {loggedUser ? <Link href={'/profile'}>{loggedUser.username}</Link>  : <Link href="/login">登录</Link>}
+              </p>
             </li>
             <li>
-              <a onClick={logout}>Logout</a>
+              <a onClick={logout}>登出</a>
             </li>
           </ul>
         </div>

@@ -1,197 +1,114 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "@/contexts/AuthProvider";
 import TodoCard from "@/components/TodoCard";
+import { Session } from "next-auth";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
-const AddTodoBtn = () => {
-  const [name, setName] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [direction, setDirection] = useState("");
-  const router = useRouter();
-
-  const handleAdd = () => {
-    const formData = {
-      name: name,
-      deadline: deadline,
-      directions: direction,
-    };
-
-    const sessionToken = sessionStorage.getItem("Authorization");
-
-    // 设置请求头
-    const headers = {
-      Authorization: `Bearer ${sessionToken}`,
-    };
-
-    axios
-      .post(`/api/todos/new`, formData, { headers })
-      .then((response) => {
-        // 请求成功处理逻辑
-        console.log(response.data);
-        router.push('/todos')
-      })
-      .catch((error) => {
-        // 请求失败处理逻辑
-        console.error(error);
-      });
-  };
-
-  return (
-    <div>
-      {/* The button to open modal */}
-      <label htmlFor="my-modal-3" className="btn">
-        添加
-      </label>
-
-      {/* Put this part before </body> tag */}
-      <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <div className="modal">
-        <div className="modal-box relative">
-          <label
-            htmlFor="my-modal-3"
-            className="btn btn-sm btn-circle absolute right-2 top-2"
-          >
-            ✕
-          </label>
-          <h3 className="text-lg font-bold">加入待办事项</h3>
-          <div className="form-control">
-            <label className="input-group input-group-sm my-3">
-              <span>待办名称</span>
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input input-bordered input-sm"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-
-            <label className="input-group input-group-sm my-3">
-              <span>截止日期</span>
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input input-bordered input-sm "
-                onChange={(e) => setDeadline(e.target.value)}
-              />
-            </label>
-
-            <label className="input-group input-group-sm my-3">
-              <span>备注</span>
-              <input
-                type="text"
-                placeholder="Type here"
-                className="input input-bordered input-sm"
-                onChange={(e) => setDirection(e.target.value)}
-              />
-            </label>
-          </div>
-          <div className="flex w-full flex-row-reverse">
-            <button className="btn btn-secondary" onClick={handleAdd}>
-              完成
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import api from "@/utils/api";
 
 const Page = () => {
-  const [data, setData] = useState();
-  const loggedUser = JSON.parse( sessionStorage.getItem('User') );
-  const [loading, setLoading] = useState(false);
+  const {loggedUser} = useContext(AuthContext);
+  const [todos, setTodos] = useState([]);
+  const nameRef = useRef(null);
+  const deadlineRef = useRef(null);
+  const directionsRef = useRef(null);
+
   const router = useRouter();
 
-  const handleClick = (id) => {
-    const sessionToken = sessionStorage.getItem("Authorization");
+  if(!loggedUser) {
+    router.push('/login');
+  }
 
-    // 设置请求头
-    const headers = {
-      Authorization: `Bearer ${sessionToken}`,
-    };
-
-    // 发送 GET 请求
-    axios
-      .delete(`/api/todos/${id}`, { headers })
-      .then((response) => {
-        // 请求成功处理逻辑
-        console.log(response.data);
-        setData(response.data);
-      })
-      .catch((error) => {
-        // 请求失败处理逻辑
-        console.error(error);
-      });
+  const handleAdd = async (e) => {
+    const res = await api.post("api/todos/new", {
+      name: nameRef.current.value,
+      deadline: deadlineRef.current.value,
+      directions: directionsRef.current.value,
+    });
+    const newData = await res.data;
+    console.log(newData);
+    setTodos([...todos, newData]);
   };
 
-  const fetchTodos = async () => {
-    const sessionToken = sessionStorage.getItem("Authorization");
-
-    // 设置请求头
-    const headers = {
-      Authorization: `Bearer ${sessionToken}`,
-    };
-    setLoading(true);
-    // 发送 GET 请求
-    axios
-      .get("/api/todos", { headers })
-      .then((response) => {
-        // 请求成功处理逻辑
-        console.log(response.data);
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        // 请求失败处理逻辑
-        console.error(error);
-      });
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`api/todos/${id}`);
+      const res = await api.get("/api/todos");
+      const data = await res.data;
+      setTodos(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
-    fetchTodos();
+    const fetchData = async () => {
+      const res = await api.get("/api/todos");
+      const data = await res.data;
+      setTodos(data);
+    };
+    fetchData();
+    console.log("useEffect被调用");
   }, []);
 
-  if (!loggedUser) {
-    router.push('/login')
-  }
+ 
 
-  if(loading) {
-    return (
-      <div>
-        loading...
-      </div>
-    )
-  }
-
-  console.log(data);
   return (
     <div className="max-w-lg mx-auto">
       <h1 className="text-3xl my-4">My Todos</h1>
-      <div className="w-full space-x-5 my-5 flex justify-between">
-        <input
-          type="text"
-          placeholder="请输入你的待办事项"
-          className="input input-bordered  w-4/5"
-        />
-        <AddTodoBtn />
+
+      <a href="#my-modal-2" className="btn">
+        添加
+      </a>
+
+      <div className="modal" id="my-modal-2">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">添加新的代办事项!</h3>
+
+          <p className="py-4">
+            <input
+              type="text"
+              placeholder="名称"
+              ref={nameRef}
+              className="input input-bordered w-full max-w-xs my-4"
+            />
+            <input
+              type="text"
+              placeholder="截止时间"
+              ref={deadlineRef}
+              className="input input-bordered w-full max-w-xs my-4"
+            />
+            <input
+              type="text"
+              placeholder="备注"
+              ref={directionsRef}
+              className="input input-bordered w-full max-w-xs my-4"
+            />
+          </p>
+          <div className="modal-action">
+            <a href="#" className="btn" onClick={handleAdd}>
+              Yay!
+            </a>
+          </div>
+        </div>
       </div>
-      
-      { data  &&
-        data.map((todo) => {
-          return (
-            <div key={todo.id}>
-              <TodoCard
-                id={todo.id}
-                name={todo.name}
-                deadline={todo.deadline}
-                directions={todo.directions}
-                handleClick={(e) => handleClick(e)}
-              />
-            </div>
-          );
-        })}
+
+      {todos.length === 0
+        ? "loading"
+        : todos?.map((todo) => {
+            return (
+              <div key={todo._id}>
+                <TodoCard
+                  id={todo._id}
+                  name={todo.name}
+                  deadline={todo.deadline}
+                  directions={todo.directions}
+                  handleClick={() => handleDelete(todo._id)}
+                />
+              </div>
+            );
+          })}
     </div>
   );
 };
