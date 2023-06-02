@@ -1,13 +1,17 @@
 "use client";
-import LoginForm from '@/components/LoginForm'
-import React from 'react'
+import LoginForm from "@/components/LoginForm";
+import React from "react";
 
 const page = () => {
   return (
-    <div className='max-w-lg mx-auto'>
-        <LoginForm />
+    <div className="container mx-auto">
+      <div className="flex justify-center items-center h-full">
+        <div className="">
+          <LoginForm />
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

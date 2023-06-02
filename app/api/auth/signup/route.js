@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const POST = async (req) => {
+  await connectToDB();
   const data = await req.json();
   try {
     console.log(data.email);

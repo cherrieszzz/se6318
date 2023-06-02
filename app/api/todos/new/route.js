@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const POST =  async (req) => {
+    await connectToDB();
     const authorizationHeader = req.headers.get('authorization');
     const todo = await req.json();
     if(!authorizationHeader) {

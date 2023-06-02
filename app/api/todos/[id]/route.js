@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const DELETE =  async (req, {params}) => {
+    await connectToDB();
     const authorizationHeader = req.headers.get('authorization');
     if(!authorizationHeader) {
         return new Response("未登录",{status:501});

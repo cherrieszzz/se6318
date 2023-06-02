@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const GET = async (req) => {
+  await connectToDB();
   const authorizationHeader = req.headers.get("authorization");
   if (!authorizationHeader) {
     return new Response(JSON.stringify({ message: "你还未登录" }), {

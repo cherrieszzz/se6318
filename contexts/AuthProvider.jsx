@@ -3,12 +3,16 @@ import axios, { all } from "axios";
 import React, { useEffect, useState } from "react";
 import { createContext } from "react";
 export const AuthContext = createContext();
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 
 const AuthProvider = ({ children }) => {
-
   const router = useRouter();
   const [loggedUser, setLoggedUser] = useState(null);
+  const [changeTheme, setChangeTheme] = useState(false);
+
+  const changeThemeFun = () => {
+    setChangeTheme(!changeTheme);
+  };
 
   const signup = async (username, email, password, image) => {
     const formData = {
@@ -26,15 +30,16 @@ const AuthProvider = ({ children }) => {
           email: res.data.email,
           image: res.data.image,
         };
-        sessionStorage.setItem('User',JSON.stringify(sessionUser));
-        setLoggedUser(JSON.parse( sessionStorage.getItem('User') ));
-        router.push('/todos');
+        sessionStorage.setItem("User", JSON.stringify(sessionUser));
+        setLoggedUser(JSON.parse(sessionStorage.getItem("User")));
+        return true;
       }
       if (res.status === 500 && 501) {
-        return;
+        return false;
       }
     } catch (err) {
-      return "server err";
+      console.log(err);
+      return false;
     }
   };
 
@@ -46,7 +51,7 @@ const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post("/api/auth/signin", formData);
       if (res.status == 501 && 500) {
-        return;
+        return false;
       }
       if (res.status === 200) {
         sessionStorage.setItem("Authorization", res.data.token);
@@ -55,26 +60,37 @@ const AuthProvider = ({ children }) => {
           email: res.data.email,
           image: res.data.image,
         };
-        sessionStorage.setItem('User',JSON.stringify(sessionUser));
-        setLoggedUser(JSON.parse( sessionStorage.getItem('User') ));
+        sessionStorage.setItem("User", JSON.stringify(sessionUser));
+        setLoggedUser(JSON.parse(sessionStorage.getItem("User")));
+        return true;
       }
-    } catch {
-      return "server err";
+    } catch (err) {
+      console.log(err);
+      return false;
     }
   };
 
   const logout = () => {
     sessionStorage.clear();
     setLoggedUser(null);
-    router.push('/');
+    redirect("/");
   };
 
   useEffect(() => {
-    setLoggedUser(sessionStorage.getItem('User'));
-  },[])
+    setLoggedUser(JSON.parse(sessionStorage.getItem("User")));
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ loggedUser, signin, signup, logout }}>
+    <AuthContext.Provider
+      value={{
+        loggedUser,
+        changeTheme,
+        signin,
+        signup,
+        logout,
+        changeThemeFun,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "autoprefixer": "10.4.14",
+    "aws-sdk": "^2.1388.0",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
-    "daisyui": "^2.51.6",
     "dotenv": "^16.0.3",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
@@ -27,6 +27,10 @@
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-loading": "^2.0.3",
     "tailwindcss": "3.3.2"
+  },
+  "devDependencies": {
+    "daisyui": "^3.0.0"
   }
 }
